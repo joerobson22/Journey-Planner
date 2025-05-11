@@ -29,11 +29,13 @@ public class RouteFileReader
                 Node startNode = new Node(start);
                 Node endNode = new Node(end);
 
-                Edge e = new Edge(colour, time, startNode, endNode);
-                edges.add(e);
+                Edge e1 = new Edge(colour, time, startNode, endNode);
+                Edge e2 = new Edge(colour, time, endNode, startNode);
+                edges.add(e1);
+                edges.add(e2);
 
-                nodes = addNode(startNode, nodes, e, true);
-                nodes = addNode(endNode, nodes, e, false);
+                nodes = addNode(startNode, nodes, e1);
+                nodes = addNode(endNode, nodes, e2);
             }
         }
         catch (IOException e) 
@@ -59,17 +61,17 @@ public class RouteFileReader
         return -1;
     }
 
-    public static ArrayList<Node> addNode(Node n, ArrayList<Node> nodes, Edge e, boolean addEdge)
+    public static ArrayList<Node> addNode(Node n, ArrayList<Node> nodes, Edge e)
     {
         int i = nodeIndex(n, nodes);   
         if(i == -1)
         {
-            if(addEdge) n.addEdge(e);
+            n.addEdge(e);
             nodes.add(n);
         }
         else
         {
-            if (addEdge) nodes.get(i).addEdge(e);
+           nodes.get(i).addEdge(e);
         }
         return nodes;
     }

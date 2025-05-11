@@ -3,21 +3,31 @@ import java.util.*;
 public class Edge 
 {
     private String lineColour;
-    private float time;
+    private double time;
     private Node startNode;
     private Node endNode;
 
-    public Edge(String lineColour, float time, Node startNode, Node endNode)
+    public Edge(String lineColour, double time, Node startNode, Node endNode)
     {
         this.lineColour = lineColour;
-        this.time = time;
+        this.time = Round.round(time, 1);
         this.startNode = startNode;
         this.endNode = endNode;
     }
 
-    public float getTime()
+    public double getTime()
     {
         return time;
+    }
+
+    public void setTime(double t)
+    {
+        time = t;
+    }
+
+    public void setEndNode(Node n)
+    {
+        endNode = n;
     }
 
     public String getLineColour()
@@ -37,6 +47,6 @@ public class Edge
 
     public void outputEdge()
     {
-        System.out.printf("Edge: %s to %s on %s line- %f mins\n", startNode.getName(), endNode.getName(), lineColour, time);
+        System.out.println(startNode.getName() + " to " + endNode.getName() + " on the " +  lineColour + " line- " + time + " mins");
     }
 }

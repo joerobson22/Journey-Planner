@@ -2,10 +2,12 @@ import java.util.*;
 
 public class RoutePlanner 
 {
-
     private ArrayList<Edge> edges;
     private ArrayList<Node> nodes;
 
+    /*
+     * constructor for route planner
+     */
     public RoutePlanner(String filename) 
     {
         RouteData data = RouteFileReader.readFile(filename);
@@ -13,6 +15,9 @@ public class RoutePlanner
         edges = data.getEdges();
     }
 
+    /*
+     * outputs all nodes and edges
+     */
     public void output()
     {
         for(Node n : nodes)
@@ -21,28 +26,24 @@ public class RoutePlanner
         }
     }
 
+    /*
+     * generates a route from the source to the target
+     */
     public Route calculateRoute(String source, String target)
     {
-        Route route = new Route();
-        float time = 0;
-
         //first find the starting node using the start parameter
         Node sourceNode = findNode(source);
-        sourceNode.setTimeToSource(0);
+        sourceNode.setTimeToSource(0, null);
 
         //then calculate all the time taken to get to every other node from the source
         setTimesToSource(sourceNode);
-        
-        //locate the target node
-        Node targetNode = findNode(target);
-        System.out.println("The shortest route to " + targetNode.getName() + " is " + targetNode.getTimeToSource() + " minutes");
 
-        //recursively go down every path
-        
-
-        return route;
+        return createRoute(source, target);
     }
 
+    /*
+     * given a source node, uses Dijkstra's algorithm to set every node's shortest time to the source node
+     */
     public void setTimesToSource(Node sourceNode)
     {
         Node currentNode = sourceNode;
@@ -55,16 +56,52 @@ public class RoutePlanner
         {
             //set this node to visited
             currentNode.visit();
-            //visit all their connected nodes
-            for(Edge e : currentNode.getEdges())
+
+            //continue if this current node is unreachable
+            if(currentNode.getTimeToSource() != Float.MAX_VALUE)
             {
-                //update every node's distance to the source (if smaller)
-                e.getEndNode().setTimeToSource(e.getTime() + currentNode.getTimeToSource());
+                //visit all their connected nodes
+                for(Edge e : currentNode.getEdges())
+                {
+                    Node n = findNode(e.getEndNode().getName());
+                    //update every node's distance to the source (if smaller)
+                    n.setTimeToSource(e.getTime() + currentNode.getTimeToSource(), e);
+                }
             }
-            currentNode = getNextClosestNode(nodes);
+            
+            currentNode = getNextClosestNode();
         }
     }
 
+    /*
+     * given a source and target string, traverses the nodes in reverse order (by using every node's 'previous edge')
+     * then reverses the route, simplifies the route and returns it
+     */
+    public Route createRoute(String source, String target)
+    {
+        Route route = new Route();
+
+        //locate the target node
+        Node targetNode = findNode(target);
+
+        //start at target node, traverse every node's previous edge
+        boolean foundStart = false;
+        Node nextNode = targetNode;
+        while(!foundStart)
+        {
+            route.addEdge(nextNode.getPreviousEdge());
+            nextNode = findNode(nextNode.getPreviousEdge().getStartNode().getName());
+
+            foundStart = nextNode.getName().equals(source);
+        }
+        route.finished();
+
+        return route;
+    }
+
+    /*
+     * given a node's name, returns the actual node from the list of nodes
+     */
     public Node findNode(String name)
     {
         for(Node n : nodes)
@@ -77,7 +114,9 @@ public class RoutePlanner
         return null;
     }
 
-    
+    /*
+     * determines if all nodes have been visited yet or not
+     */
     public boolean allNodesVisited()
     {
         for(Node n : nodes)
@@ -90,9 +129,12 @@ public class RoutePlanner
         return true;
     }
 
-    public Node getNextClosestNode(ArrayList<Node> nodes)
+    /*
+     * returns the next unvisited node with the shortest time to the source
+     */
+    public Node getNextClosestNode()
     {
-        float smallest = Float.MAX_VALUE;
+        double smallest = Double.MAX_VALUE;
         Node returnNode = null;
         for(Node n : nodes)
         {
@@ -104,4 +146,6 @@ public class RoutePlanner
         }
         return returnNode;
     }
+
+    
 }

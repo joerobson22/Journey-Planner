@@ -4,14 +4,15 @@ public class Node
 {
     private String name;
     private ArrayList<Edge> edges;
-    private float timeToSource;
+    private double timeToSource;
     private boolean visited;
+    private Edge previousEdge;
 
     public Node(String name)
     {
         this.name = name;
         edges = new ArrayList<Edge>();
-        timeToSource = Float.MAX_VALUE;
+        timeToSource = Double.MAX_VALUE;
         visited = false;
     }
 
@@ -48,20 +49,25 @@ public class Node
 
     public void visit()
     {
-        //System.out.println("Visited " + name);
         visited = true;
     }
 
-    public float getTimeToSource()
+    public double getTimeToSource()
     {
         return timeToSource;
     }
 
-    public void setTimeToSource(float time)
+    public Edge getPreviousEdge()
+    {
+        return previousEdge;
+    }
+
+    public void setTimeToSource(double time, Edge e)
     {
         if(time < timeToSource)
         {
             timeToSource = time;
+            previousEdge = e;
         }
     }
 }

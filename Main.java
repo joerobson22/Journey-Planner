@@ -9,7 +9,7 @@ public class Main
 
         RoutePlanner routePlanner = new RoutePlanner("Data.csv");
 
-        routePlanner.output();
+        //routePlanner.output();
 
         System.out.println("Welcome to Journey Planner!");
 
@@ -21,6 +21,7 @@ public class Main
 
         System.out.println("\n\nJourney from " + start + " to " + end + "...");
         Route route = routePlanner.calculateRoute(start, end);
-        route.outputRoute();
+
+        route.output();
     }
 }
