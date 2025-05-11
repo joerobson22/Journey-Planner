@@ -42,7 +42,8 @@ public class RoutePlanner
         sourceNode.setTimeToSource(0, null);
 
         Route r = new Route();
-        try{
+        try
+        {
             r = dijkstras(sourceNode, source, target);
             
         }
@@ -158,6 +159,11 @@ public class RoutePlanner
             }
         }
         return returnNode;
+    }
+
+    public ArrayList<Node> getNodes()
+    {
+        return nodes;
     }
 
     

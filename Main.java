@@ -1,15 +1,13 @@
-import java.util.Scanner;
-
 public class Main
 {
     public static void main(String[] args)
     {
+        InputWindow inputWindow = new InputWindow("Data.csv");
+        /*
         String start, end;
         Scanner scanner = new Scanner(System.in);
 
         RoutePlanner routePlanner = new RoutePlanner("Data.csv");
-
-        //routePlanner.output();
 
         System.out.println("Welcome to Journey Planner!");
 
@@ -26,5 +24,6 @@ public class Main
         System.out.println("Total changes: " + route.getNumChanges());
         System.out.println("Total number of stops: " + route.getNumStops());
         route.output();
+        */
     }
 }
