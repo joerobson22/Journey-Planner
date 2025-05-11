@@ -22,6 +22,9 @@ public class Main
         System.out.println("\n\nJourney from " + start + " to " + end + "...");
         Route route = routePlanner.calculateRoute(start, end);
 
+        System.out.println("Total route time: " + route.getRouteTime());
+        System.out.println("Total changes: " + route.getNumChanges());
+        System.out.println("Total number of stops: " + route.getNumStops());
         route.output();
     }
 }

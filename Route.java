@@ -101,7 +101,7 @@ public class Route
      */
     public int getNumChanges()
     {
-        return simpleRoute.size();
+        return simpleRoute.size() - 1;
     }
 
     /*
@@ -109,7 +109,7 @@ public class Route
      */
     public int getNumStops()
     {
-        return fullRoute.size();
+        return fullRoute.size() - 1;
     }
 
     /*

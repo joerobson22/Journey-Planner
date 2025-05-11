@@ -31,20 +31,26 @@ public class RoutePlanner
      */
     public Route calculateRoute(String source, String target)
     {
+        Route r = new Route();
         //first find the starting node using the start parameter
         Node sourceNode = findNode(source);
         sourceNode.setTimeToSource(0, null);
 
-        //then calculate all the time taken to get to every other node from the source
-        setTimesToSource(sourceNode);
-
-        return createRoute(source, target);
+        try{
+            r = dijkstras(sourceNode, source, target);
+            
+        }
+        catch (Exception e)
+        {
+            System.out.println("Could not find a route between " + source + " and " + target + "!");
+        }
+        return r;
     }
 
     /*
      * given a source node, uses Dijkstra's algorithm to set every node's shortest time to the source node
      */
-    public void setTimesToSource(Node sourceNode)
+    public Route dijkstras(Node sourceNode, String source, String target)
     {
         Node currentNode = sourceNode;
         //goal of this part:
@@ -71,6 +77,7 @@ public class RoutePlanner
             
             currentNode = getNextClosestNode();
         }
+        return createRoute(source, target);
     }
 
     /*
