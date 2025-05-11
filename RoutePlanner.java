@@ -31,11 +31,17 @@ public class RoutePlanner
      */
     public Route calculateRoute(String source, String target)
     {
-        Route r = new Route();
-        //first find the starting node using the start parameter
+        //first, reset all nodes
+        for(Node n : nodes)
+        {
+            n.reset();
+        }
+        
+        //then find the starting node using the start parameter
         Node sourceNode = findNode(source);
         sourceNode.setTimeToSource(0, null);
 
+        Route r = new Route();
         try{
             r = dijkstras(sourceNode, source, target);
             
