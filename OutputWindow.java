@@ -7,12 +7,23 @@ import java.awt.Font;
 import java.awt.font.*;
 import javax.swing.*;
 import java.util.*;
+import java.awt.Dimension;
+import java.awt.Component;
 
 public class OutputWindow extends JFrame
 {
+    final Color textColor = new Color(255, 255, 255);
+    final Color titlePanelBackground = new Color(18, 22, 68);
+    final Color routePanelBackground = new Color(80, 86, 152);
+
+    final int windowWidth = 500;
+
     Route route;
 
     JPanel mainPanel;
+    JPanel titlePanel;
+    JPanel titleWrapper;
+    JPanel routePanel;
     JScrollPane scrollPane;
 
     public OutputWindow(String source, String target, RoutePlanner routePlanner)
@@ -20,37 +31,97 @@ public class OutputWindow extends JFrame
         route = routePlanner.calculateRoute(source, target);
         route.output();
 
-        setupWindow(route);
-
-        this.setSize(500, 300);
-        this.setVisible(true);
-        this.setContentPane(scrollPane);
-        this.setTitle(source + " -> " + target);
-        this.setResizable(false);
+        setupWindow(route, source, target);
     }
 
-    public void setupWindow(Route route)
+    public void setupWindow(Route route, String source, String target)
     {
         ArrayList<Edge> simpleRoute = route.getSimpleRoute();
 
-        mainPanel = new JPanel();
-        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+        //setup title wrapper
+        titleWrapper = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        titleWrapper.setBackground(titlePanelBackground);
 
-        addNode(simpleRoute.get(0).getStartNode(), mainPanel);
+        //setup title panel
+        titlePanel = new JPanel();
+        titlePanel.setLayout(new BoxLayout(titlePanel, BoxLayout.Y_AXIS));
+        titlePanel.setBackground(titlePanelBackground);
+        titlePanel.setForeground(textColor);
+        titlePanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        titlePanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
+
+        addRouteInformation((route.getRouteTime() + " mins"), titlePanel);
+        addRouteInformation((route.getNumChanges() + " changes"), titlePanel);
+
+        titleWrapper.add(titlePanel);
+
+        //setup route panel
+        routePanel = new JPanel();
+        routePanel.setBackground(routePanelBackground);
+        routePanel.setForeground(textColor);
+        routePanel.setLayout(new BoxLayout(routePanel, BoxLayout.Y_AXIS));
+
+        addNode(simpleRoute.get(0).getStartNode(), routePanel, "images/start.png");
         for(Edge e : simpleRoute)
         {
-            addNode(e.getEndNode(), mainPanel);
+            //addConnection(e, routePanel);
+            addNode(e.getEndNode(), routePanel, "images/end.png");
         }
 
+        //setup main panel
+        mainPanel = new JPanel();
+        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+        mainPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        mainPanel.add(titleWrapper);
+        mainPanel.add(routePanel);
+
+        //set main content pane and title of window
         scrollPane = new JScrollPane(mainPanel);
+        this.setContentPane(scrollPane);
+        this.setTitle(source + " -> " + target);
+        this.setResizable(false);
+
+        //force the layout to set the size by packing, so that every panel now has a determined size
+        pack();
+
+        //now calculate the desired height and set the window's size
+        int preferredHeight = titlePanel.getHeight() + routePanel.getHeight();
+        int windowHeight = Math.min(preferredHeight, 400);
+        
+        this.setSize(windowWidth, windowHeight);
+        this.setVisible(true);
     }
 
-    public void addNode(Node n, JPanel panel)
+    public void addNode(Node n, JPanel panel, String imagePath)
     {
-        JLabel label = new JLabel(n.getName());
-        label.setFont(new Font("SansSerif", Font.PLAIN, 16));
-        panel.add(label);
-        panel.add(Box.createVerticalStrut(5));
+        JPanel newNode = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        newNode.setBackground(routePanelBackground);
 
+        JLabel image = new JLabel(new ImageIcon(imagePath));
+
+        JLabel label = new JLabel(n.getName());
+        label.setFont(new Font("SansSerif", Font.PLAIN, 20));
+        label.setForeground(textColor);
+
+        newNode.add(image);
+        newNode.add(label);
+
+        panel.add(newNode);
+        panel.add(Box.createVerticalStrut(10));
+    }
+
+    public void addConnection(Edge e, JPanel panel)
+    {
+
+    }
+
+    public void addRouteInformation(String info, JPanel panel)
+    {
+        JLabel label = new JLabel(info);
+        label.setFont(new Font("SansSerif", Font.BOLD, 24));
+        label.setForeground(textColor);
+        label.setAlignmentX(Component.LEFT_ALIGNMENT);
+        panel.add(label);
+        panel.add(Box.createVerticalStrut(2));
     }
 }
