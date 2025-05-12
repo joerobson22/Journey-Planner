@@ -1,10 +1,6 @@
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
-import java.awt.GridLayout;
-import java.awt.Label;
 import java.awt.Font;
-import java.awt.font.*;
 import javax.swing.*;
 import java.util.*;
 import java.awt.Dimension;
@@ -29,15 +25,22 @@ public class OutputWindow extends JFrame
     public OutputWindow(String source, String target, RoutePlanner routePlanner)
     {
         route = routePlanner.calculateRoute(source, target);
-        route.output();
+        //route.output();
 
         setupWindow(route, source, target);
     }
 
     public void setupWindow(Route route, String source, String target)
     {
-        ArrayList<Edge> simpleRoute = route.getSimpleRoute();
+        setupTitlePanel();
 
+        setupRoutePanel(route);
+
+        setupMain(source, target);
+    }
+
+    public void setupTitlePanel()
+    {
         //setup title wrapper
         titleWrapper = new JPanel(new FlowLayout(FlowLayout.LEFT));
         titleWrapper.setBackground(titlePanelBackground);
@@ -50,10 +53,15 @@ public class OutputWindow extends JFrame
         titlePanel.setAlignmentX(Component.LEFT_ALIGNMENT);
         titlePanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
 
-        addRouteInformation((route.getRouteTime() + " mins"), titlePanel);
-        addRouteInformation((route.getNumChanges() + " changes"), titlePanel);
+        addRouteInformation((route.getRouteTime() + " mins"), titlePanel, 24);
+        addRouteInformation((route.getNumChanges() + " changes"), titlePanel, 24);
 
         titleWrapper.add(titlePanel);
+    }
+
+    public void setupRoutePanel(Route route)
+    {
+        ArrayList<Edge> simpleRoute = route.getSimpleRoute();
 
         //setup route panel
         routePanel = new JPanel();
@@ -64,10 +72,13 @@ public class OutputWindow extends JFrame
         addNode(simpleRoute.get(0).getStartNode(), routePanel, "images/start.png");
         for(Edge e : simpleRoute)
         {
-            //addConnection(e, routePanel);
+            addConnection(e, routePanel);
             addNode(e.getEndNode(), routePanel, "images/end.png");
         }
+    }
 
+    public void setupMain(String source, String target)
+    {
         //setup main panel
         mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
@@ -112,16 +123,44 @@ public class OutputWindow extends JFrame
 
     public void addConnection(Edge e, JPanel panel)
     {
+        JPanel newConnection = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        newConnection.setBackground(routePanelBackground);
 
+        newConnection.add(new JLabel("            "));
+
+        JPanel rectangle = new JPanel();
+        rectangle.setPreferredSize(new Dimension(20, 100));
+        rectangle.setBackground(ColorMap.getColor(e.getLineColour()));
+        newConnection.add(rectangle);
+
+        JPanel connectionInfo = new JPanel();
+        connectionInfo.setBackground(routePanelBackground);
+        connectionInfo.setLayout(new BoxLayout(connectionInfo, BoxLayout.Y_AXIS));
+
+        addRouteInformation(upperFirstLetter(e.getLineColour()) + " line", connectionInfo, 16);
+        addRouteInformation(e.getTime() + " mins", connectionInfo, 16);
+
+        newConnection.add(new JLabel("             "));
+        newConnection.add(connectionInfo);
+
+        panel.add(newConnection);
+
+        panel.revalidate();
+        panel.repaint();
     }
 
-    public void addRouteInformation(String info, JPanel panel)
+    public void addRouteInformation(String info, JPanel panel, int fontSize)
     {
         JLabel label = new JLabel(info);
-        label.setFont(new Font("SansSerif", Font.BOLD, 24));
+        label.setFont(new Font("SansSerif", Font.BOLD, fontSize));
         label.setForeground(textColor);
         label.setAlignmentX(Component.LEFT_ALIGNMENT);
         panel.add(label);
         panel.add(Box.createVerticalStrut(2));
+    }
+
+    public String upperFirstLetter(String s)
+    {
+        return s.substring(0, 1).toUpperCase() + s.substring(1, s.length()).toLowerCase();
     }
 }
